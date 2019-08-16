@@ -19,6 +19,7 @@ services:
     image: postgres
     ports:
       - '5432'
+  #create the tables in the database
   migrate:
     build: .
     command: python ./manage.py migrate
