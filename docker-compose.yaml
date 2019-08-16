@@ -3,7 +3,29 @@ services:
   web: #name of the container
     build: .
     ports:
-    - "127.0.0.1:8000:8000"
-    command: python ./manage.py runserver
+    - '8000:8000'
+    command: python ./manage.py runserver 0.0.0.0:8000 #uwsgi don't worry about this now
     volumes:
       - .:/app #map the volume--anything changed here is reflected in the container
+    environment:
+      - DB_HOST=db_service
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=
+    depends_on:
+      - db_service
+      - migrate
+  db_service:
+    image: postgres
+    ports:
+      - '5432'
+  migrate:
+    build: .
+    command: python ./manage.py migrate
+    environment:
+      - DB_HOST=db_service
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=
+    depends_on:
+      - db_service
